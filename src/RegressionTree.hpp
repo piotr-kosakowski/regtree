@@ -7,19 +7,17 @@
 
 class RegressionTree {
 public:
-    struct Params {
-        int max_depth = 10;
-        int min_samples_split = 2;
-    };
-
-    RegressionTree(Params params = Params()) : params_(params) {}
+    RegressionTree(int max_depth = 10, int min_samples_split = 2) 
+        : max_depth(max_depth), min_samples_split(min_samples_split) {}
+    
+    int max_depth;
+    int min_samples_split;
 
     void fit(const std::vector<double>& X, const std::vector<double>& y, int n_samples, int n_features);
 
-    std::vector<double> predict(const std::vector<double>& X, int n_samples, int n_features) const;
+    std::vector<double> predict(const std::vector<double>& X, int n_samples) const;
 
 private:
-    Params params_;
     std::unique_ptr<Node> root_;
     int n_features_ = 0;
 
@@ -27,7 +25,7 @@ private:
 
     std::unique_ptr<Node> build_tree(const std::vector<double>& X, 
                                      const std::vector<double>& y, 
-                                     int n_samples,
+                                     std::vector<int>& indices,
                                      int depth);
 
     struct Split {
@@ -38,7 +36,7 @@ private:
 
     Split find_best_split(const std::vector<double>& X, 
                           const std::vector<double>& y,
-                          int n_samples);
+                          const std::vector<int>& indices);
 };
 
 #endif
