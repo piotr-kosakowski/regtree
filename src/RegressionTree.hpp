@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 
-
 class RegressionTree {
 public:
     struct Params {
@@ -15,20 +14,20 @@ public:
 
     RegressionTree(Params params = Params()) : params_(params) {}
 
+    void fit(const std::vector<double>& X, const std::vector<double>& y, int n_samples, int n_features);
 
-    void fit(const std::vector<std::vector<double>>& X, const std::vector<double>& y);
-
-
-    double predict_one(const std::vector<double>& x) const;
-
-    std::vector<double> predict(const std::vector<std::vector<double>>& X) const;
+    std::vector<double> predict(const std::vector<double>& X, int n_samples, int n_features) const;
 
 private:
     Params params_;
     std::unique_ptr<Node> root_;
+    int n_features_ = 0;
 
-    std::unique_ptr<Node> build_tree(const std::vector<std::vector<double>>& X, 
+    double predict_one(const double* x) const;
+
+    std::unique_ptr<Node> build_tree(const std::vector<double>& X, 
                                      const std::vector<double>& y, 
+                                     int n_samples,
                                      int depth);
 
     struct Split {
@@ -36,8 +35,10 @@ private:
         double threshold = 0.0;
         double mse_reduction = -1.0;
     };
-    Split find_best_split(const std::vector<std::vector<double>>& X, 
-                          const std::vector<double>& y);
+
+    Split find_best_split(const std::vector<double>& X, 
+                          const std::vector<double>& y,
+                          int n_samples);
 };
 
 #endif
