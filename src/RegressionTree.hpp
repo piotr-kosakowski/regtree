@@ -33,7 +33,6 @@ private:
     struct Split {
         int feature_index = -1;
         double threshold = 0.0;
-        double mse_reduction = -1.0;
     };
 
     Split find_best_split(const std::vector<double>& X, 

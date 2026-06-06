@@ -8,8 +8,7 @@ void RegressionTree::fit(const std::vector<double>& X, const std::vector<double>
 
     // std::vector<int> indices(n_samples);
     // std::iota(indices.begin(), indices.end(), 0); 
-    std::fill(this->indices.begin(), this->indices.end(), 0);
-
+    this->indices.assign(n_samples, 0);
     this->root_ = build_tree(X, y, 0, n_samples, 0);
 }
 
@@ -45,8 +44,9 @@ std::unique_ptr<Node> RegressionTree::build_tree(const std::vector<double>& X,
                                                  int n_samples_split, 
                                                  int mask) {
     double sum = 0;
-    int right_mask = 1 << (depth-1);
+    int right_mask = 1 << depth; 
     int n_right_samples = 0;
+    
     for (size_t i=0; i < this->indices.size(); i++) {
         sum += y[i] * (this->indices[i] == mask);
     }
@@ -59,6 +59,9 @@ std::unique_ptr<Node> RegressionTree::build_tree(const std::vector<double>& X,
 
     Split split = find_best_split(X, y, mask);
 
+    if (split.feature_index == -1) {
+        return std::make_unique<Node>(mean);
+    }
 
     auto node = std::make_unique<Node>();
     node->feature_index = split.feature_index;
@@ -81,7 +84,52 @@ std::unique_ptr<Node> RegressionTree::build_tree(const std::vector<double>& X,
 
 RegressionTree::Split RegressionTree::find_best_split(const std::vector<double>& X, 
                                                       const std::vector<double>& y,
-                                                      int mask ) {
-    // TODO: Logic for finding the split that reduces MSE the most
-    return Split();
+                                                      int mask) {
+    double best_sse = 2e30; 
+    Split best_split;
+
+    for (int f = 0; f < this->n_features_; f++) {
+        for (size_t i = 0; i < this->indices.size(); i++) {
+            if (this->indices[i] != mask) continue;
+
+            double threshold = X[i * this->n_features_ + f];
+            
+            double sum_l = 0, sum_r = 0;
+            double sum_sq_l = 0, sum_sq_r = 0;
+            int count_l = 0, count_r = 0;
+
+            for (size_t j = 0; j < this->indices.size(); j++) {
+                if (this->indices[j] != mask) continue;
+
+                double val = X[j * this->n_features_ + f];
+                double target = y[j];
+
+                if (val < threshold) {
+                    sum_l += target;
+                    sum_sq_l += target * target;
+                    count_l++;
+                } else {
+                    sum_r += target;
+                    sum_sq_r += target * target;
+                    count_r++;
+                }
+            }
+
+            if (count_l < this->min_samples_split || count_r < this->min_samples_split) {
+                continue;
+            }
+
+            double sse_l = sum_sq_l - (sum_l * sum_l / count_l);
+            double sse_r = sum_sq_r - (sum_r * sum_r / count_r);
+            double total_sse = sse_l + sse_r;
+
+            if (total_sse < best_sse) {
+                best_sse = total_sse;
+                best_split.feature_index = f;
+                best_split.threshold = threshold;
+            }
+        }
+    }
+    return best_split;
 }
+
