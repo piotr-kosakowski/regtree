@@ -19,14 +19,16 @@ public:
 
 private:
     std::unique_ptr<Node> root_;
+    std::vector<int> indices;
     int n_features_ = 0;
 
     double predict_one(const double* x) const;
 
     std::unique_ptr<Node> build_tree(const std::vector<double>& X, 
                                      const std::vector<double>& y, 
-                                     std::vector<int>& indices,
-                                     int depth);
+                                     int depth,
+                                     int n_samples_split,
+                                     int mask);
 
     struct Split {
         int feature_index = -1;
@@ -36,7 +38,7 @@ private:
 
     Split find_best_split(const std::vector<double>& X, 
                           const std::vector<double>& y,
-                          const std::vector<int>& indices);
+                          int mask);
 };
 
 #endif
