@@ -3,3 +3,6 @@
 *.exe
 *.o
 *.so
+.venv
+build
+__pycache__
