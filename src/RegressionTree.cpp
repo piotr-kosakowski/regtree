@@ -1,8 +1,9 @@
 #include "RegressionTree.hpp"
 #include <numeric> 
+#include <cstdlib>
 
-void RegressionTree::fit(const std::vector<double>& X, const std::vector<double>& y, int n_samples, int n_features) {
-    if (X.empty() || y.empty() || n_samples <= 0) return;
+void RegressionTree::fit(const double* X, const double* y, int n_samples, int n_features) {
+    if (!X || !y || n_samples <= 0) return;
     
     this->n_features_ = n_features;
 
@@ -26,20 +27,22 @@ double RegressionTree::predict_one(const double* x) const {
     return current->predicted_value;
 }
 
-std::vector<double> RegressionTree::predict(const std::vector<double>& X, int n_samples) const {
-    std::vector<double> predictions;
-    predictions.reserve(n_samples);
+void RegressionTree::predict(const double* X, double* out, int n_samples) const {
+    // std::vector<double> predictions;
+    // predictions.reserve(n_samples);
+    // double* predictions = (double*)malloc(sizeof(double) * n_samples);
+    if (!X || !out) return;
     
     for (int i = 0; i < n_samples; ++i) {
         const double* sample = &X[i * this->n_features_];
-        predictions.push_back(predict_one(sample));
+        out[i] = predict_one(sample);
     }
     
-    return predictions;
+    // return predictions;
 }
 
-std::unique_ptr<Node> RegressionTree::build_tree(const std::vector<double>& X, 
-                                                 const std::vector<double>& y,
+std::unique_ptr<Node> RegressionTree::build_tree(const double* X, 
+                                                 const double* y,
                                                  int depth,
                                                  int n_samples_split, 
                                                  int mask) {
@@ -82,8 +85,8 @@ std::unique_ptr<Node> RegressionTree::build_tree(const std::vector<double>& X,
     return node;
 }
 
-RegressionTree::Split RegressionTree::find_best_split(const std::vector<double>& X, 
-                                                      const std::vector<double>& y,
+RegressionTree::Split RegressionTree::find_best_split(const double* X, 
+                                                      const double* y,
                                                       int mask) {
     double best_sse = 2e30; 
     Split best_split;

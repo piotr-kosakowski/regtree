@@ -13,9 +13,9 @@ public:
     int max_depth;
     int min_samples_split;
 
-    void fit(const std::vector<double>& X, const std::vector<double>& y, int n_samples, int n_features);
+    void fit(const double* X, const double* y, int n_samples, int n_features);
 
-    std::vector<double> predict(const std::vector<double>& X, int n_samples) const;
+    void predict(const double* X, double* out, int n_samples) const;
 
 private:
     std::unique_ptr<Node> root_;
@@ -24,8 +24,8 @@ private:
 
     double predict_one(const double* x) const;
 
-    std::unique_ptr<Node> build_tree(const std::vector<double>& X, 
-                                     const std::vector<double>& y, 
+    std::unique_ptr<Node> build_tree(const double* X, 
+                                     const double* y, 
                                      int depth,
                                      int n_samples_split,
                                      int mask);
@@ -35,8 +35,8 @@ private:
         double threshold = 0.0;
     };
 
-    Split find_best_split(const std::vector<double>& X, 
-                          const std::vector<double>& y,
+    Split find_best_split(const double* X, 
+                          const double* y,
                           int mask);
 };
 
