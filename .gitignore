@@ -1,2 +1,5 @@
 *.pdf
 *.ipynb
+*.exe
+*.o
+*.so
