@@ -7,7 +7,7 @@ cdef extern from "RegressionTree.hpp":
 
         void fit(const double* X, const double* y, int n_samples, int n_features) except +
 
-        void predict(const double* X, const double* y, int n_samples) except +
+        void predict(const double* X, double* out, int n_samples) except +
 
 cdef class PyRegressionTree:
     cdef RegressionTree* _cpp_tree
@@ -22,5 +22,9 @@ cdef class PyRegressionTree:
     def fit(self, double[:] X, double[:] y, int n_samples, int n_features):
         self._cpp_tree.fit(&X[0], &y[0], n_samples, n_features)
 
-    def predict(self, double[:] X, double[:] y, int n_samples):
-        self._cpp_tree.predict(&X[0], &y[0], n_samples)
+    def predict(self, double[:] X, int n_samples):
+        out = np.empty(n_samples, dtype=np.npy_float64)
+        cdef double[:] out_view = out
+        self._cpp_tree.predict(&X[0], &out_view[0], n_samples)
+
+        return out
