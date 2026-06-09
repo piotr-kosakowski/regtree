@@ -1,0 +1,20 @@
+[build-system]
+requires = ['setuptools==82.0.1']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = "regtree"
+version = "0.0.1"
+dependencies = [
+  "numpy>=2.0.0",
+  "Cython>=3.2.0"
+]
+requires-python = ">=3.11"
+authors = [
+  {name = "Piotr Kosakowski", email = "01171240@pw.edu.pl"},
+]
+maintainers = [
+  {name = "Piotr Kosakowski", email = "01171240@pw.edu.pl"}
+]
+description = "Great package for regression trees"
+license = {text = "MIT"}
