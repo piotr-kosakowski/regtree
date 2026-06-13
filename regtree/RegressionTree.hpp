@@ -48,7 +48,15 @@ private:
     /** @brief Traverses the tree for a single sample and returns final leaf's value. */
     double predict_one(const double* x) const;
 
-    /** @brief Internal recursive function to build the tree. */
+    /**
+     * @brief Internal recursive function to build the tree. 
+     * 
+     * @param mask The current path identifier (bit pattern) for this node.
+     * @details The 'indices' vector stores a bitmask for each sample.
+     * The j-th bit represents the split decision at depth j: 
+     * 0 = left child, 1 = right child. 
+     * A sample belongs to this node only if its bitmask matches the 'mask' parameter.
+     * */
     std::unique_ptr<Node> build_tree(const double* X, 
                                      const double* y, 
                                      int depth,
@@ -60,7 +68,7 @@ private:
         double threshold = 0.0;
     };
 
-    /**@brief Checks possible splits to find the one, that minimizes SSE */
+    /** @brief Checks possible splits to find the one, that minimizes SSE */
     Split find_best_split(const double* X, 
                           const double* y,
                           int mask);

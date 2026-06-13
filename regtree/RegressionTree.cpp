@@ -1,14 +1,13 @@
 #include "RegressionTree.hpp"
 #include <numeric> 
 #include <cstdlib>
+#include <omp.h>
 
 void RegressionTree::fit(const double* X, const double* y, int n_samples, int n_features) {
     if (!X || !y || n_samples <= 0) return;
     
     this->n_features_ = n_features;
 
-    // std::vector<int> indices(n_samples);
-    // std::iota(indices.begin(), indices.end(), 0); 
     this->indices.assign(n_samples, 0);
     this->root_ = build_tree(X, y, 0, n_samples, 0);
 }
@@ -28,9 +27,6 @@ double RegressionTree::predict_one(const double* x) const {
 }
 
 void RegressionTree::predict(const double* X, double* out, int n_samples) const {
-    // std::vector<double> predictions;
-    // predictions.reserve(n_samples);
-    // double* predictions = (double*)malloc(sizeof(double) * n_samples);
     if (!X || !out) return;
     
     for (int i = 0; i < n_samples; ++i) {
@@ -38,7 +34,6 @@ void RegressionTree::predict(const double* X, double* out, int n_samples) const 
         out[i] = predict_one(sample);
     }
     
-    // return predictions;
 }
 
 std::unique_ptr<Node> RegressionTree::build_tree(const double* X, 
@@ -46,6 +41,12 @@ std::unique_ptr<Node> RegressionTree::build_tree(const double* X,
                                                  int depth,
                                                  int n_samples_split, 
                                                  int mask) {
+    /**
+     * Uses bitmask to define splits. 
+     * i-th element of array represents complex information about splits of i-th sample.
+     * j-th least significant bit represents information about split at depth j. 
+     * 1 represents membership of right split.
+     */
     double sum = 0;
     int right_mask = 1 << depth; 
     int n_right_samples = 0;
@@ -90,46 +91,58 @@ RegressionTree::Split RegressionTree::find_best_split(const double* X,
                                                       int mask) {
     double best_sse = 2e30; 
     Split best_split;
+    #pragma omp parallel
+    {
+        double local_best_sse = 2e30;
+        Split local_best_split;
+        #pragma omp for nowait
+        for (int f = 0; f < this->n_features_; f++) {
+            for (size_t i = 0; i < this->indices.size(); i++) {
+                if (this->indices[i] != mask) continue;
 
-    for (int f = 0; f < this->n_features_; f++) {
-        for (size_t i = 0; i < this->indices.size(); i++) {
-            if (this->indices[i] != mask) continue;
+                double threshold = X[i * this->n_features_ + f];
+                
+                double sum_l = 0, sum_r = 0;
+                double sum_sq_l = 0, sum_sq_r = 0;
+                int count_l = 0, count_r = 0;
 
-            double threshold = X[i * this->n_features_ + f];
-            
-            double sum_l = 0, sum_r = 0;
-            double sum_sq_l = 0, sum_sq_r = 0;
-            int count_l = 0, count_r = 0;
+                for (size_t j = 0; j < this->indices.size(); j++) {
+                    if (this->indices[j] != mask) continue;
 
-            for (size_t j = 0; j < this->indices.size(); j++) {
-                if (this->indices[j] != mask) continue;
+                    double val = X[j * this->n_features_ + f];
+                    double target = y[j];
 
-                double val = X[j * this->n_features_ + f];
-                double target = y[j];
+                    if (val < threshold) {
+                        sum_l += target;
+                        sum_sq_l += target * target;
+                        count_l++;
+                    } else {
+                        sum_r += target;
+                        sum_sq_r += target * target;
+                        count_r++;
+                    }
+                }
 
-                if (val < threshold) {
-                    sum_l += target;
-                    sum_sq_l += target * target;
-                    count_l++;
-                } else {
-                    sum_r += target;
-                    sum_sq_r += target * target;
-                    count_r++;
+                if (count_l < this->min_samples_split || count_r < this->min_samples_split) {
+                    continue;
+                }
+
+                double sse_l = sum_sq_l - (sum_l * sum_l / count_l);
+                double sse_r = sum_sq_r - (sum_r * sum_r / count_r);
+                double total_sse = sse_l + sse_r;
+
+                if (total_sse < local_best_sse) {
+                    local_best_sse = total_sse;
+                    local_best_split.feature_index = f;
+                    local_best_split.threshold = threshold;
                 }
             }
-
-            if (count_l < this->min_samples_split || count_r < this->min_samples_split) {
-                continue;
-            }
-
-            double sse_l = sum_sq_l - (sum_l * sum_l / count_l);
-            double sse_r = sum_sq_r - (sum_r * sum_r / count_r);
-            double total_sse = sse_l + sse_r;
-
-            if (total_sse < best_sse) {
-                best_sse = total_sse;
-                best_split.feature_index = f;
-                best_split.threshold = threshold;
+        }
+        #pragma omp critical
+        {
+            if (local_best_sse < best_sse) {
+                best_sse = local_best_sse;
+                best_split = local_best_split;
             }
         }
     }

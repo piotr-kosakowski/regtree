@@ -5,8 +5,10 @@ import sys
 
 if sys.platform == "win32":
     extra_compile_args = ["/std:c++17"]
+    extra_link_args = ["/openmp"]
 else:
-    extra_compile_args = ["-std=c++17"] 
+    extra_compile_args = ["-std=c++17"]
+    extra_link_args = ["-fopenmp"] 
     
 
 ext = Extension(
@@ -17,7 +19,8 @@ ext = Extension(
      ],
      include_dirs=["regtree", numpy.get_include()],
      language="c++",
-     extra_compile_args=extra_compile_args  
+     extra_compile_args=extra_compile_args,
+     extra_link_args=extra_link_args
  )
 
 setup(
