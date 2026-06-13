@@ -23,8 +23,7 @@ cdef class PyRegressionTree:
         self._cpp_tree.fit(&X[0], &y[0], n_samples, n_features)
 
     def predict(self, double[:] X, int n_samples):
-        out = np.empty(n_samples, dtype=np.npy_float64)
+        out = np.empty(n_samples, dtype=np.float64)
         cdef double[:] out_view = out
         self._cpp_tree.predict(&X[0], &out_view[0], n_samples)
-
         return out
