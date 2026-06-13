@@ -3,17 +3,37 @@ import numpy as np
 
 
 class DecisionTreeRegressor:
+    """
+    A Regression Tree implementation for numerical features.
+
+    Parameters
+    ----------
+    max_depth : int, default=5
+        The maximum depth of the tree.
+    min_samples_split : int, default=2
+        The minimum number of samples required to split an internal node.
+    """
     def __init__(self, max_depth=5, min_samples_split=2):
+        """Initializes the model."""
         assert isinstance(max_depth, int) and max_depth >= 0 and max_depth < 32, "max_depth must be a integer between 0 and 31"
         assert isinstance(min_samples_split, int) and min_samples_split > 0, "min_samples_split must be an integer greater than 0"
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
-        # self._tree = None
         self._tree = PyRegressionTree(self.max_depth, self.min_samples_split)
         self._is_fitted = False
         self.n_features_ = None
 
     def fit(self, X, y):
+        """
+        Build a regression tree from the training set (X, y).
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples, n_features)
+            The training input samples.
+        y : ndarray of shape (n_samples,)
+            The target values.
+        """
         assert X.ndim == 2, "X must be a 2D array"
         assert y.ndim == 1, "y must be a 1D array"
         assert X.shape[0] == y.shape[0], "Number of samples in X and y must be equal"
@@ -29,8 +49,20 @@ class DecisionTreeRegressor:
         self._is_fitted = True
 
     def predict(self, X):
-        # if not self._is_fitted:
-        #     raise ValueError("The model has not been fitted yet.")
+        """
+        Predict regression value for X.
+
+        Parameters
+        ----------
+        X : ndarray of shape (n_samples, n_features)
+            The input samples.
+
+        Returns
+        -------
+        preds : ndarray of shape (n_samples,)
+            The predicted values.
+        """
+
         assert self._is_fitted, "The model has not been fitted yet."
         assert X.ndim == 2, "X must be a 2D array"
         assert X.shape[1] == self.n_features_, f"X must have {self.n_features_} features"
