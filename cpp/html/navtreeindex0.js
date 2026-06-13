@@ -1,0 +1,24 @@
+var NAVTREEINDEX0 =
+{
+"_node_8hpp_source.html":[1,0,0,0],
+"_regression_tree_8hpp_source.html":[1,0,0,1],
+"annotated.html":[0,0],
+"class_regression_tree.html":[0,0,2],
+"class_regression_tree.html#a7902b3e8b4924adbee0928f9621d8852":[0,0,2,2],
+"class_regression_tree.html#a91857cb8c4b7e3fad7a29fcb26e0767b":[0,0,2,1],
+"class_regression_tree.html#ae71211e5043664810c316353f530aa4d":[0,0,2,0],
+"classes.html":[0,1],
+"classregtree_1_1_decision_tree_regressor.html":[0,0,0,0],
+"classregtree_1_1_decision_tree_regressor.html#a1bd7e986ed4cdf0872991de06904f966":[0,0,0,0,1],
+"classregtree_1_1_decision_tree_regressor.html#a61cd0fe53ea453c66fd12171d209bcfc":[0,0,0,0,2],
+"classregtree_1_1_decision_tree_regressor.html#affe4a80d736c6e6c814e77455085f140":[0,0,0,0,0],
+"dir_2cd74479c84b9a5750ac09ea5b4d13b7.html":[1,0,0],
+"files.html":[1,0],
+"functions.html":[0,2,0],
+"functions_func.html":[0,2,1],
+"index.html":[],
+"pages.html":[],
+"struct_node.html":[0,0,1],
+"struct_node.html#a082d5efb0be81faaeb35dc02b2a4fc76":[0,0,1,0],
+"struct_node.html#aa43266d476d2a09621aaee4d58a32a22":[0,0,1,1]
+};
