@@ -4,6 +4,9 @@ import numpy as np
 
 class DecisionTreeRegressor:
     def __init__(self, max_depth=5, min_samples_split=2):
+        """
+        
+        """
         assert isinstance(max_depth, int) and max_depth > 0 and max_depth < 32, "max_depth must be a positive integer between 1 and 31"
         assert isinstance(min_samples_split, int) and min_samples_split > 1, "min_samples_split must be an integer greater than 1"
         self.max_depth = max_depth
