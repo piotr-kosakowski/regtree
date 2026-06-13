@@ -1,0 +1,14 @@
+site_name: regtree
+theme: material
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["."] 
+
+nav:
+  - Home: index.md
+  - API: api.md
+  - Example: example.md
+  - C++ Internal API: cpp/html/index.html

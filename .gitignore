@@ -9,3 +9,5 @@ __pycache__
 *.pyd
 regtree.egg-info
 _core.cpp
+site/
+docs/cpp
