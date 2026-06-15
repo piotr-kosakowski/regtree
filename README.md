@@ -4,9 +4,8 @@ Regression Tree implementation in C++ with Python bindings.
 
 
 ## Installation
-Clone the repository and install the package using pip:
 ```bash
-pip install .
+pip install git+https://github.com/piotr-kosakowski/regtree.git
 ```
 
 ## Basic Usage
