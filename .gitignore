@@ -11,3 +11,4 @@ regtree.egg-info
 _core.cpp
 site/
 docs/cpp
+dist/
